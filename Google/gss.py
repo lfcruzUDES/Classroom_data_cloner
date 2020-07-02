@@ -25,3 +25,15 @@ class Gss(ServiceAPI):
             range=self.range_name
         ).execute()
         return result.get('values', [])
+
+    def append_datas(self, datas, value_input_option='RAW'):
+        body = {
+            'values': datas
+        }
+        result = self.conn().spreadsheets().values().append(
+            spreadsheetId=self.ss_id,
+            range=self.range_name,
+            valueInputOption=value_input_option,
+            body=body
+        ).execute()
+        return result.get('updates').get('updatedRows')
