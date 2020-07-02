@@ -12,3 +12,9 @@ environs
 
 # ORM
 peewee
+
+# Interactive Python
+ipython
+
+# Unidecode
+unidecode

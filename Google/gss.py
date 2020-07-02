@@ -6,7 +6,7 @@ except:
     from base_api import ServiceAPI
 
 
-class GSS(ServiceAPI):
+class Gss(ServiceAPI):
     """ This functions manages conexion and data manipulation. """
 
     api_service = 'sheets'

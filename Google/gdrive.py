@@ -32,3 +32,24 @@ class Drive(ServiceAPI):
             status, done = downloader.next_chunk()
             # print(f"{int(status.progress() * 100)}")
         return downloader
+
+    def get_files(self, folder_id):
+        files_data = []
+        page_token = None
+        while True:
+            response = self.conn().files().list(
+                q=f"'{folder_id}' in parents",
+                fields='nextPageToken, files(id, name, mimeType, webViewLink)',
+                pageToken=page_token
+            ).execute()
+            for file in response.get('files', []):
+                files_data.append({
+                    'id': file.get("id"),
+                    'name': file.get("name"),
+                    'mimeType': file.get("mimeType"),
+                    'webViewLink': file.get("webViewLink")
+                })
+            page_token = response.get('nextPageToken', None)
+            if page_token is None:
+                break
+        return files_data
