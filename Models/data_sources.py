@@ -8,8 +8,6 @@ from .utils import clear_txt
 
 from datetime import datetime
 
-# Año	Oferta	Sem	Grupo	Id Asig	Asignatura	Docente
-
 
 class SourceModel(Model):
     slug = CharField(max_length=100, unique=True)
@@ -40,10 +38,11 @@ class SourceModel(Model):
         self.career = clear_txt(self.career, uni_decode=True)
         self.grade = clear_txt(self.grade, delallspaces=True, uni_decode=True)
         self.group = clear_txt(self.group, delallspaces=True, uni_decode=True)
-        self.subject_id = clear_txt(self.subject_id, delallspaces=True, uni_decode=True)
+        self.subject_id = clear_txt(
+            self.subject_id, delallspaces=True, uni_decode=True)
         self.subject = clear_txt(self.subject, uni_decode=True)
         self.teacher = clear_txt(self.teacher)
-        self._updated = datetime.now();
+        self._updated = datetime.now()
 
         super(SourceModel, self).save(*args, **kwargs)
 

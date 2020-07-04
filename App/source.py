@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from peewee import IntegrityError
+from peewee import IntegrityError, OperationalError
 
 import Settings
 from Google import Gss
 from Models import PeriodModel, SourceModel
+from exceptions import NoPeriod
 
 
 class SourceApp:
@@ -16,9 +17,17 @@ class SourceApp:
     def __init__(self):
         self.period = self.get_period()
 
+    @staticmethod
+    def set_period(name):
+        """ Inserta un periodo en la taba de periodos academicos. """
+        return PeriodModel.create(name=name)
+
     def get_period(self):
         """ Obtiene el útimo periodo académico de la base de datos. """
-        return PeriodModel.select()[-1]
+        try:
+            return PeriodModel.select()[-1]
+        except IndexError:
+            raise NoPeriod
 
     def get_datas(self):
         """ Obtiene los datos del libro de cálculo que contiene
@@ -28,7 +37,7 @@ class SourceApp:
         with Settings.DB.atomic():
             for data_range in Settings.RANGES_EXTRACT_DATA:
                 ss = Gss(Settings.SECRETS_PATH, Settings.SS_SCOPES,
-                        Settings.BOOK_EXTRACT_DATAS_ID, data_range)
+                         Settings.BOOK_EXTRACT_DATAS_ID, data_range)
                 values = ss.get_datas()
                 for val in values:
                     data = self.compress(val)
@@ -72,7 +81,6 @@ class SourceApp:
                 'drive': data["drive_url"]
             }
 
-
             source, created = SourceModel.get_or_create(
                 slug=slug,
                 defaults=defaults
@@ -80,6 +88,7 @@ class SourceApp:
 
             if source and not created:
                 SourceModel.update(**defaults).where(SourceModel.slug == slug)
+
 
 if __name__ == "__main__":
     s = SourceApp()
