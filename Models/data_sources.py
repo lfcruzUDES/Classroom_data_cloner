@@ -20,7 +20,8 @@ class SourceModel(Model):
     subject_id = CharField(max_length=20)
     subject = CharField(max_length=200)
     teacher = CharField(max_length=200)
-    status = TextField(null=True)
+    # status: 1 -> Analisar, 2 -> No analisar
+    status = SmallIntegerField(default=1)
     classroom = TextField()
     drive = TextField()
     _created = DateTimeField(default=datetime.now())

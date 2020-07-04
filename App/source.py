@@ -25,13 +25,14 @@ class SourceApp:
         las materias y los docentes, según los rangos declarados
         en Settings.RANGES_EXTRACT_DATA. A continuación guarda
         los datos en la base de datos."""
-        for data_range in Settings.RANGES_EXTRACT_DATA:
-            ss = Gss(Settings.SECRETS_PATH, Settings.SS_SCOPES,
-                     Settings.BOOK_EXTRACT_DATAS_ID, data_range)
-            values = ss.get_datas()
-            for val in values:
-                data = self.compress(val)
-                self.save(data)
+        with Settings.DB.atomic():
+            for data_range in Settings.RANGES_EXTRACT_DATA:
+                ss = Gss(Settings.SECRETS_PATH, Settings.SS_SCOPES,
+                        Settings.BOOK_EXTRACT_DATAS_ID, data_range)
+                values = ss.get_datas()
+                for val in values:
+                    data = self.compress(val)
+                    self.save(data)
 
     def compress(self, data):
         """Crea un diccionario teniendo la lista de encabezados de
@@ -70,6 +71,8 @@ class SourceApp:
                 'classroom': data["classroom_url"],
                 'drive': data["drive_url"]
             }
+
+
             source, created = SourceModel.get_or_create(
                 slug=slug,
                 defaults=defaults

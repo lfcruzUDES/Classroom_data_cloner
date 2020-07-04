@@ -49,4 +49,5 @@ LOCAL_TABLES = [
     'SourceModel',
     'PeriodModel',
     'ResourceModel',
+    'LogsModel',
 ]

@@ -66,13 +66,13 @@ class Drive(ServiceAPI):
         ).execute()
         return dFile
 
-    def copy_file(self, file_id, name=f'Copied_{datetime.now()}'):
+    def copy_file(self, file_id, name=f'Copied_{datetime.now()}', parents=[]):
         """ Copia un archivo por su ID """
         dFile = self.conn().files().copy(
             fileId=file_id,
             supportsAllDrives=True,
             fields='id, name, mimeType, webViewLink',
-            body={'name': name}
+            body={'name': name, 'parents': parents}
         ).execute()
         return dFile
 
