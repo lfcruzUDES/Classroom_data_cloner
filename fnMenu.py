@@ -14,7 +14,7 @@ class FnMenu():
         return SourceApp()
 
     @staticmethod
-    def set_period(auto_resp=False):
+    def get_period_books(auto_resp=False):
         if FnMenu.confirm(auto_resp):
             period_name = input('Agregar periodo: ')
             period = SourceApp.set_period(period_name)
@@ -58,7 +58,7 @@ class FnMenu():
             FnMenu.SE().set_to_index()
 
     @staticmethod
-    def all():
+    def all_process():
         print('Se va a ejecutar un proceso de extracción y clonado de los archivos de las asignaturas.')
         print('Este proceso puede durar bastante tiempo.')
         auto_resp = FnMenu.confirm()

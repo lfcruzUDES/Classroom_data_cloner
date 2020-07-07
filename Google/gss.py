@@ -7,7 +7,18 @@ except:
 
 
 class Gss(ServiceAPI):
-    """ This functions manages conexion and data manipulation. """
+    """ This functions manages conexion and data manipulation.
+
+    Args:
+
+        secrets_path (str): Lugar en el que se encuentran los arvhicos
+        con lo secretos, el archivo debe llamarse client_secret.json
+
+        scopes (list[scope, ...]): Alcances de la API de Spreadsheet
+        ss_id (str): ID del libro de cálculo
+
+        range_name (str): rango del que se traerán los datos.
+    """
 
     api_service = 'sheets'
     api_version = 'v4'

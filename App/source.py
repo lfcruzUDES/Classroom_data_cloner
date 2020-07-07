@@ -4,7 +4,7 @@ from peewee import IntegrityError, OperationalError
 
 import Settings
 from Google import Gss
-from Models import PeriodModel, SourceModel
+from Models import PeriodBooKModel, SourceModel
 from exceptions import NoPeriod
 
 
@@ -17,23 +17,36 @@ class SourceApp:
     def __init__(self):
         self.period = self.get_period()
 
-    @staticmethod
-    def set_period(name):
-        """ Inserta un periodo en la taba de periodos academicos. """
-        return PeriodModel.create(name=name)
+    # def set_period(name):
+    #     """ Inserta un periodo en la taba de periodos academicos. """
+    #     return PeriodModel.create(name=name)
 
-    def get_period(self):
-        """ Obtiene el útimo periodo académico de la base de datos. """
-        try:
-            return PeriodModel.select()[-1]
-        except IndexError:
-            raise NoPeriod
+    def get_period_books(self):
+        """ Obtiene los libros de periodos. """
+        books_created = 0
+        with Settings.DB.atomic():
+            ss = Gss(Settings.SECRETS_PATH, Settings.SS_SCOPES,
+                     Settings.PERIOD_BOOK_INDEX_ID, Settings.PERIOD_BOOK_INDEX_RANGE)
+            books = ss.get_datas()
+            for book in books:
+                if book[0] and book[1]:
+                    book, created = PeriodBooKModel.get_or_create(
+                        book_id=book[1].split('/')[-1],
+                        defaults={
+                            'period': book[0],
+                            'boor_url': book[1]
+                        }
+                    )
+                    if created:
+                        books_created += 1
+        return books_created
 
     def get_datas(self):
         """ Obtiene los datos del libro de cálculo que contiene
         las materias y los docentes, según los rangos declarados
         en Settings.RANGES_EXTRACT_DATA. A continuación guarda
         los datos en la base de datos."""
+        values_total = 0
         with Settings.DB.atomic():
             for data_range in Settings.RANGES_EXTRACT_DATA:
                 ss = Gss(Settings.SECRETS_PATH, Settings.SS_SCOPES,
@@ -42,7 +55,8 @@ class SourceApp:
                 for val in values:
                     data = self.compress(val)
                     self.save(data)
-                return len(values)
+                values_total += len(values)
+        return values_total
 
     def compress(self, data):
         """Crea un diccionario teniendo la lista de encabezados de

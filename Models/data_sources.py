@@ -9,7 +9,23 @@ from .utils import clear_txt
 from datetime import datetime
 
 
+class PeriodBooKModel(Model):
+    period = CharField(max_length=250)
+    book_url = CharField(max_length=250)
+    book_id = CharField(max_length=250, unique=True)
+    _created = DateTimeField(default=datetime.now())
+    _updated = DateTimeField(default=datetime.now())
+
+    class Meta:
+        database = DB
+
+    def save(self, *args, **kwargs):
+       self._updated = datetime.now()
+       super(PeriodBooKModel, self).save(*args, **kwargs)
+
+
 class SourceModel(Model):
+    period_book = ForeignKeyField(PeriodBooKModel, on_delete='CASCADE')
     slug = CharField(max_length=100, unique=True)
     plan = CharField(max_length=10)
     career = CharField(max_length=100)
@@ -30,8 +46,7 @@ class SourceModel(Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            period = PeriodModel.select()[-1]
-            self.slug = (f'{self.plan}_{period.name}_{self.career}_'
+            self.slug = (f'{self.plan}_{period_book.period.replace(" ", "_")}_{self.career}_'
                          f'{self.grade}{self.group}')
         self.slug = clear_txt(self.slug, delallspaces=True, uni_decode=True)
         self.plan = clear_txt(self.plan, delallspaces=True, uni_decode=True)
@@ -45,19 +60,3 @@ class SourceModel(Model):
         self._updated = datetime.now()
 
         super(SourceModel, self).save(*args, **kwargs)
-
-
-class PeriodModel(Model):
-    name = CharField(max_length=20, unique=True)
-
-    class Meta:
-        database = DB
-
-    def save(self, *args, **kwargs):
-        if self.name:
-            self.name = clear_txt(
-                self.name,
-                delallspaces=True,
-                uni_decode=True
-            )
-        super(PeriodModel, self).save(*args, **kwargs)

@@ -5,6 +5,13 @@ BASE_PATH = path.dirname(path.abspath(__file__))
 
 # Google
 
+# Libro de libros de asignaturas segrún
+# sus periodos académicos
+
+PERIOD_BOOK_INDEX_URL = 'https://docs.google.com/spreadsheets/d/1qs7HimfVympd_bzM4VQML1_PIjyoJoMPJww87vL1h-w/edit'
+PERIOD_BOOK_INDEX_ID = '1qs7HimfVympd_bzM4VQML1_PIjyoJoMPJww87vL1h-w'
+PERIOD_BOOK_INDEX_RANGE = 'index'
+
 # Libro de de datos de las Asignaturas >>>
 BOOK_EXTRACT_DATAS_URL = 'https://docs.google.com/spreadsheets/d/1o-fIP1zgJbkevkWdw-XiSaG7LsntbbEfQiqlz1KAAkk/edit'
 BOOK_EXTRACT_DATAS_ID = '1o-fIP1zgJbkevkWdw-XiSaG7LsntbbEfQiqlz1KAAkk'
@@ -47,7 +54,7 @@ DB_NAME = 'subjects_resourses.db'
 DB = SqliteDatabase(DB_NAME)
 LOCAL_TABLES = [
     'SourceModel',
-    'PeriodModel',
+    'PeriodBooKModel',
     'ResourceModel',
     'LogsModel',
 ]
