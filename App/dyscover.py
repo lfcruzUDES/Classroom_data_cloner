@@ -20,7 +20,7 @@ class SeekAndExecute:
     def save_info_files(self):
         """ Guarda los datos de los archivos que se encuentran dentro de
         cada carpeta de classroom almacenada en SourceModel"""
-        folders = SourceModel.select().where(SourceModel.status == 1)
+        folders = SourceModel.select().where(SourceModel.is_active == 1)
         files_saved_len = 0
         for folder in folders:
             folder_id = self.get_id_from_url(folder.drive)
@@ -47,7 +47,7 @@ class SeekAndExecute:
                 LogsModel.create(
                     error=e
                 )
-            return files_saved_len
+        return files_saved_len
 
     def file_clone_factory(self):
         """ De los datos almacenados en ResourceModel se obtienen
@@ -59,11 +59,11 @@ class SeekAndExecute:
         files = ResourceModel.select().join(SourceModel).where(
             ResourceModel.repoFileId.is_null(True)
         ).where(
-            ResourceModel.source.status == 1
+            ResourceModel.source.is_active == 1
         )
 
+        cloned_files = 0
         for file_data in files:
-            cloned_files = 0
             with Settings.DB.atomic():
                 if not 'concentrado' in file_data.name.lower().strip():
                     file_id = file_data.fileId
@@ -86,7 +86,7 @@ class SeekAndExecute:
                     else:
                         cloned_files += 1
                         file_data.save()
-            return cloned_files
+        return cloned_files
 
     def set_to_index(self):
         """ Se revisan los registros de la tabla ResourceModel,
@@ -96,14 +96,14 @@ class SeekAndExecute:
         Spreadsheet Settings.BOOK_INDEX_URL. """
         datas = []
         files = ResourceModel.select().where(
-            ResourceModel.ssUploaded == 0
+            ResourceModel.is_indexed == 0
         ).where(
             ResourceModel.repoFileId.is_null(False)
         )
 
         for row in files:
             datas.append(
-                [str(datetime.now()), row.source.plan, row.source.career, row.source.grade,
+                [str(datetime.now()), row.source.plan, row.source.period_book.period, row.source.career, row.source.grade,
                  row.source.group, row.source.subject_id, row.source.subject,
                  row.source.teacher, row.name, row.repoViewLink]
             )
@@ -115,8 +115,8 @@ class SeekAndExecute:
                 other='Error al cargar archivos al index.'
             )
         else:
-            update = ResourceModel.update(ssUploaded=True).where(
-                ResourceModel.ssUploaded == 0
+            update = ResourceModel.update(is_indexed=1).where(
+                ResourceModel.is_indexed == 0
             ).where(
                 ResourceModel.repoFileId.is_null(False)
             )

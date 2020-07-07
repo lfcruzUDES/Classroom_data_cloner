@@ -13,9 +13,6 @@ PERIOD_BOOK_INDEX_ID = '1qs7HimfVympd_bzM4VQML1_PIjyoJoMPJww87vL1h-w'
 PERIOD_BOOK_INDEX_RANGE = 'index'
 
 # Libro de de datos de las Asignaturas >>>
-BOOK_EXTRACT_DATAS_URL = 'https://docs.google.com/spreadsheets/d/1o-fIP1zgJbkevkWdw-XiSaG7LsntbbEfQiqlz1KAAkk/edit'
-BOOK_EXTRACT_DATAS_ID = '1o-fIP1zgJbkevkWdw-XiSaG7LsntbbEfQiqlz1KAAkk'
-SHEET_EXTRACT_DATAS = 'Extracción'
 RANGES_EXTRACT_DATA = ['DI', 'IMA', 'NTR', 'GST', 'AT', 'MTA', 'MBA']
 SECRETS_PATH = path.join(BASE_PATH, 'secrets')
 SS_HEADERS = ['plan', 'career', 'grade', 'group',

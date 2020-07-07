@@ -13,10 +13,7 @@ class SourceApp:
     Settings.BOOK_EXTRACT_DATAS_URL """
 
     headers = Settings.SS_HEADERS
-
-    def __init__(self):
-        self.period = self.get_period()
-
+    period = ''
     # def set_period(name):
     #     """ Inserta un periodo en la taba de periodos academicos. """
     #     return PeriodModel.create(name=name)
@@ -31,10 +28,10 @@ class SourceApp:
             for book in books:
                 if book[0] and book[1]:
                     book, created = PeriodBooKModel.get_or_create(
-                        book_id=book[1].split('/')[-1],
+                        book_id=book[1].split('/')[-2],
                         defaults={
                             'period': book[0],
-                            'boor_url': book[1]
+                            'book_url': book[1]
                         }
                     )
                     if created:
@@ -47,15 +44,20 @@ class SourceApp:
         en Settings.RANGES_EXTRACT_DATA. A continuación guarda
         los datos en la base de datos."""
         values_total = 0
+        period_books = (PeriodBooKModel.select()
+                        .where(PeriodBooKModel.is_active == 1))
         with Settings.DB.atomic():
-            for data_range in Settings.RANGES_EXTRACT_DATA:
-                ss = Gss(Settings.SECRETS_PATH, Settings.SS_SCOPES,
-                         Settings.BOOK_EXTRACT_DATAS_ID, data_range)
-                values = ss.get_datas()
-                for val in values:
-                    data = self.compress(val)
-                    self.save(data)
-                values_total += len(values)
+            for period_book in period_books:
+                self.period = period_book.period
+                for data_range in Settings.RANGES_EXTRACT_DATA:
+                    ss = Gss(Settings.SECRETS_PATH, Settings.SS_SCOPES,
+                             period_book.book_id, data_range)
+                    values = ss.get_datas()
+                    for val in values:
+                        data = self.compress(val)
+                        created = self.save(period_book, data)
+                        if created:
+                            values_total += 1
         return values_total
 
     def compress(self, data):
@@ -72,7 +74,7 @@ class SourceApp:
         values = data[:first_part_len] + data[-2:]
         return {k: v for k, v in zip(self.headers, values)}
 
-    def save(self, data):
+    def save(self, period_book, data):
         """Guarda la data en la base de datos, en la tabla
         SourceModel.
 
@@ -82,9 +84,10 @@ class SourceApp:
         """
         if ('classroom.google.com' in data['classroom_url']
                 and 'drive.google.com' in data['drive_url']):
-            slug = (f'{data["plan"]}_{self.period.name}_{data["career"]}_'
+            slug = (f'{data["plan"]}_{self.period.replace(" ", "_").upper()}_{data["career"]}_'
                     f'{data["subject_id"]}_{data["grade"]}{data["group"]}')
             defaults = {
+                'period_book': period_book,
                 'plan': data["plan"],
                 'career': data["career"],
                 'grade': data["grade"],
@@ -103,6 +106,8 @@ class SourceApp:
 
             if source and not created:
                 SourceModel.update(**defaults).where(SourceModel.slug == slug)
+
+            return 1 if created else 0
 
 
 if __name__ == "__main__":

@@ -8,8 +8,7 @@ from fnMenu import FnMenu
 if __name__ == "__main__":
     try:
         if argv[1] == 'period':
-            print('Agregar un nuevo periodo.')
-            FnMenu.set_period()
+            FnMenu.get_period_books()
         elif argv[1] == 'subjects':
             FnMenu.get_subjects()
         elif argv[1] == 'files':
@@ -24,8 +23,7 @@ if __name__ == "__main__":
             print('No se encontró ingún parámetro válido.')
             print('Pruebe con alguno de los siguientes parámetros.\n')
             FnMenu.instructions()
-    except NoPeriod:
-        print('No hay un periodo académico al cual asignar las clases que serán extraidas. favor de agregar uno.')
-        FnMenu.set_period()
     except IndexError:
-        FnMenu.all()
+        FnMenu.all_process()
+    except Exception as e:
+        print(e)

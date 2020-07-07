@@ -18,7 +18,7 @@ class ResourceModel(Model):
     webViewLink = CharField(max_length=250)
     repoViewLink = CharField(max_length=250, null=True)
     repoFileId = CharField(max_length=250, null=True)
-    ssUploaded = BooleanField(default=False)
+    is_indexed = SmallIntegerField(default=0)
     _created = DateTimeField(default=datetime.now())
     _updated = DateTimeField(default=datetime.now())
 

@@ -13,6 +13,7 @@ class PeriodBooKModel(Model):
     period = CharField(max_length=250)
     book_url = CharField(max_length=250)
     book_id = CharField(max_length=250, unique=True)
+    is_active = SmallIntegerField(default=1)
     _created = DateTimeField(default=datetime.now())
     _updated = DateTimeField(default=datetime.now())
 
@@ -25,7 +26,8 @@ class PeriodBooKModel(Model):
 
 
 class SourceModel(Model):
-    period_book = ForeignKeyField(PeriodBooKModel, on_delete='CASCADE')
+    period_book = ForeignKeyField(
+        PeriodBooKModel, on_delete='CASCADE', backref='period_book')
     slug = CharField(max_length=100, unique=True)
     plan = CharField(max_length=10)
     career = CharField(max_length=100)
@@ -34,8 +36,7 @@ class SourceModel(Model):
     subject_id = CharField(max_length=20)
     subject = CharField(max_length=200)
     teacher = CharField(max_length=200)
-    # status: 1 -> Analisar, 2 -> No analisar
-    status = SmallIntegerField(default=1)
+    is_active = SmallIntegerField(default=1)
     classroom = TextField()
     drive = TextField()
     _created = DateTimeField(default=datetime.now())

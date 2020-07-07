@@ -15,10 +15,10 @@ class FnMenu():
 
     @staticmethod
     def get_period_books(auto_resp=False):
+        print('Buscar nuevos libros de asignaturas...')
         if FnMenu.confirm(auto_resp):
-            period_name = input('Agregar periodo: ')
-            period = SourceApp.set_period(period_name)
-            print(f'Se ha agregado el periodo {period.name}.')
+            period_books = FnMenu.SU().get_period_books()
+            print(f'Se obtivieron {period_books} libros nuevos.')
 
     @staticmethod
     def get_subjects(auto_resp=False, quiet=False):
@@ -63,6 +63,7 @@ class FnMenu():
         print('Este proceso puede durar bastante tiempo.')
         auto_resp = FnMenu.confirm()
         if auto_resp:
+            FnMenu.get_period_books(auto_resp)
             FnMenu.get_subjects(auto_resp)
             FnMenu.get_info_files(auto_resp)
             FnMenu.make_clones(auto_resp)
