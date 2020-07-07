@@ -42,6 +42,7 @@ class SourceApp:
                 for val in values:
                     data = self.compress(val)
                     self.save(data)
+                return len(values)
 
     def compress(self, data):
         """Crea un diccionario teniendo la lista de encabezados de

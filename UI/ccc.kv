@@ -1,3 +1,20 @@
-<RootWidget>
+
+<Main@BoxLayout>:
+    orientation: "vertical"
+    Label:
+        text: "Estado del proceso."
+        id: work_status
     Button:
-        size_hint: None, None
+        text: "Obtener asignaturas."
+        on_press: root.get_subjects()
+    Button:
+        text: "Obtener datos de los archivos de las asignaturas."
+        on_press: root.get_info_files()
+    Button:
+        text: "Clonar archivos"
+        on_press: root.make_clones()
+    Button:
+        text: "Enviar datos de los archivos clonados al index."
+        on_press: root.get_subjects()
+
+Main:

@@ -20,7 +20,8 @@ class SeekAndExecute:
     def save_info_files(self):
         """ Guarda los datos de los archivos que se encuentran dentro de
         cada carpeta de classroom almacenada en SourceModel"""
-        folders = SourceModel.select()
+        folders = SourceModel.select().where(SourceModel.status == 1)
+        files_saved_len = 0
         for folder in folders:
             folder_id = self.get_id_from_url(folder.drive)
             try:
@@ -40,10 +41,13 @@ class SeekAndExecute:
                                 fileId=fileId,
                                 defaults=defaults
                             )
+                            if created:
+                                files_saved_len += 1
             except Exception as e:
                 LogsModel.create(
                     error=e
                 )
+            return files_saved_len
 
     def file_clone_factory(self):
         """ De los datos almacenados en ResourceModel se obtienen
@@ -52,12 +56,14 @@ class SeekAndExecute:
         obtiene la URL e ID que se guarda en la misma tabla y que
         indica que ya se han creado las copias y evita que en la
         próxima iteración se hagan más copias. """
-        files = ResourceModel.select().where(
+        files = ResourceModel.select().join(SourceModel).where(
             ResourceModel.repoFileId.is_null(True)
         ).where(
             ResourceModel.source.status == 1
         )
+
         for file_data in files:
+            cloned_files = 0
             with Settings.DB.atomic():
                 if not 'concentrado' in file_data.name.lower().strip():
                     file_id = file_data.fileId
@@ -78,7 +84,9 @@ class SeekAndExecute:
                             other=f'From: ResourceModel id:{file_data.id} SourceModel:{file_data.source.id}'
                         )
                     else:
+                        cloned_files += 1
                         file_data.save()
+            return cloned_files
 
     def set_to_index(self):
         """ Se revisan los registros de la tabla ResourceModel,
