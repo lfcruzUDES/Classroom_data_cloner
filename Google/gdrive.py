@@ -7,7 +7,6 @@ except:
 
 import io
 from datetime import datetime
-from os import path
 
 from googleapiclient.http import MediaIoBaseDownload
 
@@ -58,7 +57,7 @@ class Drive(ServiceAPI):
         return files_data
 
     def get_file(self, file_id):
-        """ Obtiene un archivo por du ID """
+        """ Obtiene un archivo por su ID """
         dFile = self.conn().files().get(
             fileId=file_id,
             fields='id, name, mimeType, webViewLink',
@@ -93,3 +92,15 @@ class Drive(ServiceAPI):
             fields='id, parents',
             supportsAllDrives=True
         ).execute()
+
+
+if __name__ == '__main__':
+    drive = Drive(
+        secrets_path=('/home/sit/Documentos/python/'
+                      'Classroom_data_cloner/secrets'),
+        scopes=[
+            'https://www.googleapis.com/auth/drive.readonly',
+            'https://www.googleapis.com/auth/drive.file'
+        ]
+    )
+    drive.conn()
